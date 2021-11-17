@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block body %}
+
+<h1>Database Query</h1>
+
+<p>Name query was {{ name }}</p>
+
+<table>
+    <tr>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Phone</th>
+    </tr>   
+    {% for person in people %}
+    <tr>
+        <td>{{ person[0] }}</td>
+        <td>{{ person[1] }}</td>
+        <td>{{ person[2] }}</td>
+    </tr>
+    {% endfor %}
+    </tr>
+</table>
+
+{% endblock %}

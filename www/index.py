@@ -8,6 +8,9 @@ import cgi
 import cgitb 
 cgitb.enable()
 
+# Import the mysql connector
+import mysql.connector
+
 # Set up the jinja2 HTML template system so that we can separate the
 # HTML into template files and just keep code and logic in the CGI
 # script
@@ -22,6 +25,15 @@ def main():
         autoescape=select_autoescape()
     )
 
+
+    # Create the database connection
+    global db
+    db = mysql.connector.connect(
+        host="localhost",
+        user="cgiuser",
+        database="CGItest"
+    )
+
     # Read the URL parameters
     form = cgi.FieldStorage()
 
@@ -30,6 +42,29 @@ def main():
 
     elif form["page"].value == "dynamic":
         show_dynamic_page(form["name"].value)
+
+    elif form["page"].value == "database":
+        name = ""
+        if "name" in form:
+            name = form["name"].value
+        show_database_page(name)
+
+
+def show_database_page(query_name):
+    cursor = db.cursor()
+
+    if query_name:
+        cursor.execute("SELECT first_name, last_name, phone FROM person WHERE first_name=%s",(query_name,))
+    
+    else:
+        cursor.execute("SELECT first_name, last_name, phone FROM person")
+
+
+    people_data = cursor.fetchall()
+
+    template = env.get_template("database.html")
+
+    print(template.render(name=query_name, people=people_data))
 
 
 def show_dynamic_page(name_from_form):
